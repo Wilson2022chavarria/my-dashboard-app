@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import GaleriaAdmin from '../Components/GaleríaAdmin'; // Mantengo la importación de la galería
+import GaleriaAdmin from '../Components/GaleríaAdmin';
 import '../styles/admin-dashboard.css';
 import { SearchType, Solicitud } from '../types';
 import Modal from './Modal';
@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchType, setSearchType] = useState<SearchType>('nombre');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('todas'); // Nueva pestaña para todas las solicitudes
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'details' | 'update'>('add');
   const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
@@ -21,19 +21,22 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchDatos = async () => {
       try {
-        const [voluntariadoResponse, donantesResponse, adultosMayoresResponse] = await Promise.all([
+        const [voluntariadoResponse, donantesResponse, adultosMayoresResponse, asociadosResponse] = await Promise.all([
           fetch('http://localhost:8080/api/voluntariado'),
           fetch('http://localhost:8080/api/donante'), // Asegúrate de que la URL es correcta
-          fetch('http://localhost:8080/api/adultomayor') // Llamada al API de Adultos Mayores
+          fetch('http://localhost:8080/api/adultomayor'), // Llamada al API de Adultos Mayores
+          fetch('http://localhost:8080/api/asociado') // Llamada al API de Asociados
         ]);
 
         if (!voluntariadoResponse.ok) throw new Error('Error al cargar los datos de voluntariado');
         if (!donantesResponse.ok) throw new Error('Error al cargar los datos de donantes');
         if (!adultosMayoresResponse.ok) throw new Error('Error al cargar los datos de adultos mayores');
+        if (!asociadosResponse.ok) throw new Error('Error al cargar los datos de asociados');
 
         const voluntariadoData = await voluntariadoResponse.json();
         const donantesData = await donantesResponse.json();
         const adultosMayoresData = await adultosMayoresResponse.json();
+        const asociadosData = await asociadosResponse.json();
 
         // Transformar datos de voluntariado
         const solicitudesVoluntariado = voluntariadoData.map((voluntariado: any) => ({
@@ -74,8 +77,26 @@ export default function AdminDashboard() {
           estado: adulto.estadoAprobado ? 'Aprobada' : 'Pendiente',
         }));
 
+        // Transformar datos de asociados
+        const solicitudesAsociados = asociadosData.map((asociado: any) => ({
+          id: asociado.id,
+          nombre: asociado.nombre || 'Sin nombre',
+          apellidos: asociado.apellidos || 'Sin apellidos',
+          cedula: asociado.cedula,
+          email: asociado.email || 'Sin email',
+          telefono: asociado.telefono || 'Sin teléfono',
+          fechaIngreso: asociado.fechaRegistro || 'Fecha no disponible',
+          tipoSolicitud: 'Asociación',
+          estado: asociado.estadoAprobado ? 'Aprobada' : 'Pendiente',
+        }));
+
         // Combinamos todas las solicitudes
-        setSolicitudes([...solicitudesVoluntariado, ...solicitudesDonantes, ...solicitudesAdultosMayores]);
+        setSolicitudes([
+          ...solicitudesVoluntariado, 
+          ...solicitudesDonantes, 
+          ...solicitudesAdultosMayores, 
+          ...solicitudesAsociados
+        ]);
         setLoading(false);
       } catch (error) {
         console.error('Error al cargar solicitudes:', error);
@@ -91,7 +112,7 @@ export default function AdminDashboard() {
     return solicitudes
       .filter(solicitud => {
         if (searchType === 'cedula') {
-          return solicitud.cedula?.includes(searchQuery); // Agregamos el signo de interrogación para evitar el error
+          return solicitud.cedula?.includes(searchQuery);
         } else if (searchType === 'nombre') {
           return solicitud.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                  solicitud.apellidos?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -102,16 +123,16 @@ export default function AdminDashboard() {
         return true;
       })
       .filter(solicitud => {
+        // Mostramos todas las solicitudes en la pestaña "todas"
         if (activeTab === 'voluntariado') return solicitud.tipoSolicitud === 'Voluntariado';
         if (activeTab === 'donaciones') return solicitud.tipoSolicitud === 'Donación';
         if (activeTab === 'asociados') return solicitud.tipoSolicitud === 'Asociación';
         if (activeTab === 'adultos-mayores') return solicitud.tipoSolicitud === 'Registrar Adulto Mayor';
-        return true; // Mostrar todas en la pestaña 'solicitudes'
+        return true; // Para la pestaña "todas", no filtramos por tipo
       })
       .sort((a, b) => new Date(b.fechaIngreso).getTime() - new Date(a.fechaIngreso).getTime());
   }, [solicitudes, searchType, searchQuery, activeTab]);
 
-  // Definir solicitudes por tipo para el OverviewGrid
   const solicitudesPorTipo = useMemo(() => ({
     Voluntariado: solicitudes.filter(solicitud => solicitud.tipoSolicitud === 'Voluntariado'),
     Donación: solicitudes.filter(solicitud => solicitud.tipoSolicitud === 'Donación'),
@@ -152,119 +173,94 @@ export default function AdminDashboard() {
         <nav>
           {[
             { icon: '📊', label: 'Dashboard', value: 'overview' },
+            { icon: '📋', label: 'Todas', value: 'todas' }, // Nueva pestaña "Todas"
             { icon: '❤️', label: 'Voluntariado', value: 'voluntariado' },
             { icon: '💰', label: 'Donaciones', value: 'donaciones' },
             { icon: '🤝', label: 'Asociados', value: 'asociados' },
             { icon: '👵', label: 'Adultos Mayores', value: 'adultos-mayores' },
-            { icon: '🖼️', label: 'Galería', value: 'galeria' }, // Aquí restauré la opción de la galería
-            { icon: '📅', label: 'Actividades', value: 'actividades' },
-            { icon: '📄', label: 'Todas las Solicitudes', value: 'solicitudes' },
-          ].map((item) => (
-            <button
-              key={item.value}
-              className={`sidebar-button ${activeTab === item.value ? 'active' : ''}`}
-              onClick={() => { 
-                setActiveTab(item.value);
-                setSidebarOpen(false);
-              }}
-            >
-              <span className="icon">{item.icon}</span>
-              {item.label}
+            { icon: '🖼️', label: 'Galería', value: 'galeria' }, // Mantienes la galería
+          ].map(({ icon, label, value }) => (
+            <button key={value} className={activeTab === value ? 'active' : ''} onClick={() => setActiveTab(value)}>
+              {icon} {label}
             </button>
           ))}
         </nav>
       </aside>
 
-      <div className="main-content">
-        <header className="top-bar">
-          <button className="menu-button" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? '❌' : '📂'}
-          </button>
-          <h1>Panel de Administración</h1>
-          <UserMenu />
-        </header>
+      <main className="main-content">
+        {activeTab === 'overview' ? (
+          <OverviewGrid solicitudesPorTipo={solicitudesPorTipo} />
+        ) : activeTab === 'galeria' ? (
+          <GaleriaAdmin />
+        ) : (
+          <>
+            <header className="search-header">
+              <input
+                type="text"
+                placeholder={`Buscar por ${searchType}`}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select onChange={(e) => setSearchType(e.target.value as SearchType)}>
+                <option value="nombre">Nombre</option>
+                <option value="cedula">Cédula</option>
+                <option value="mes">Mes</option>
+              </select>
+              <button onClick={() => openModal('add')}>Agregar solicitud</button>
+            </header>
 
-        <main>
-          {activeTab === 'overview' && (
-            <OverviewGrid solicitudesPorTipo={solicitudesPorTipo} />
-          )}
-
-          {activeTab === 'galeria' && (
-            <GaleriaAdmin /> // Restauré la galería
-          )}
-
-          {['voluntariado', 'donaciones', 'asociados', 'adultos-mayores', 'solicitudes'].includes(activeTab) && (
-            <div>
-              <div className="tab-title">
-                <h2>{activeTab === 'voluntariado' ? 'Solicitudes de Voluntariado' :
-                     activeTab === 'donaciones' ? 'Solicitudes de Donaciones' :
-                     activeTab === 'asociados' ? 'Solicitudes de Asociación' :
-                     activeTab === 'adultos-mayores' ? 'Solicitudes de Registro de Adultos Mayores' :
-                     'Todas las Solicitudes'}</h2>
-                <p>{activeTab === 'voluntariado' ? 'Administra las solicitudes de voluntariado.' :
-                   activeTab === 'donaciones' ? 'Administra las solicitudes de donaciones.' :
-                   activeTab === 'asociados' ? 'Administra las solicitudes de asociación.' :
-                   'Administra las solicitudes recibidas.'}
-                </p>
-              </div>
-              <div className="card-content">
-                <table className="solicitudes-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Nombre</th>
-                      <th>Apellidos</th>
-                      <th>Cédula</th>
-                      <th>Email</th>
-                      <th>Teléfono</th>
-                      <th>Tipo de Solicitud</th>
-                      <th>Estado</th>
-                      <th>Fecha de Ingreso</th>
-                      <th>Acciones</th>
+            <section className="solicitudes-list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Cédula</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Fecha Ingreso</th>
+                    <th>Tipo de Solicitud</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSolicitudes.map(solicitud => (
+                    <tr key={solicitud.id}>
+                      <td>{solicitud.id}</td>
+                      <td>{solicitud.nombre}</td>
+                      <td>{solicitud.apellidos}</td>
+                      <td>{solicitud.cedula}</td>
+                      <td>{solicitud.email}</td>
+                      <td>{solicitud.telefono}</td>
+                      <td>{solicitud.fechaIngreso}</td>
+                      <td>{solicitud.tipoSolicitud}</td>
+                      <td>{solicitud.estado}</td>
+                      <td>
+                        <button onClick={() => openModal('details', solicitud)}>Detalles</button>
+                        <button onClick={() => openModal('update', solicitud)}>Actualizar</button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredSolicitudes.map(solicitud => (
-                      <tr key={solicitud.id}>
-                        <td>{solicitud.id}</td>
-                        <td>{solicitud.nombre}</td>
-                        <td>{solicitud.apellidos}</td>
-                        <td>{solicitud.cedula}</td>
-                        <td>{solicitud.email}</td>
-                        <td>{solicitud.telefono}</td>
-                        <td>{solicitud.tipoSolicitud}</td>
-                        <td>{solicitud.estado}</td>
-                        <td>{solicitud.fechaIngreso}</td>
-                        <td>
-                          <button className="action-button" onClick={() => openModal('details', solicitud)}>
-                            Ver Detalles
-                          </button>
-                          <button className="action-button" onClick={() => openModal('update', solicitud)}>
-                            Actualizar Estado
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="add-solicitud">
-                  <button className="add-button" onClick={() => openModal('add')}>Agregar Nueva Solicitud</button>
-                </div>
-              </div>
-            </div>
-          )}
-        </main>
-      </div>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          </>
+        )}
 
-      {modalOpen && (
-        <Modal
-          type={modalType}
-          solicitud={selectedSolicitud}
-          onAdd={handleAddSolicitud}
-          onUpdate={handleUpdateStatus}
-          onClose={() => setModalOpen(false)}
-        />
-      )}
+        {modalOpen && (
+          <Modal
+            type={modalType}
+            solicitud={selectedSolicitud}
+            onAdd={handleAddSolicitud}
+            onUpdate={handleUpdateStatus}
+            onClose={() => setModalOpen(false)}
+          />
+        )}
+      </main>
+
+      <UserMenu />
     </div>
   );
 }
