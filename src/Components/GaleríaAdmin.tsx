@@ -160,8 +160,7 @@ export default function GaleriaAdmin() {
   
   export default GaleriaAdmin; */
 
-
-  import React, { useState } from 'react';
+  import React, { useState, useEffect } from 'react';
   import axios from 'axios';
   import '../styles/GaleriaAdmin.css';
   
@@ -169,7 +168,23 @@ export default function GaleriaAdmin() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [description, setDescription] = useState('');
     const [uploadStatus, setUploadStatus] = useState<string | null>(null);
-    const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+    const [uploadedImages, setUploadedImages] = useState<{ url: string, description: string }[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
+  
+    // Fetch imágenes cargadas previamente cuando se monta el componente
+    useEffect(() => {
+      const fetchUploadedImages = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/images');
+          // Se asume que el servidor devuelve una lista de objetos con 'url' y 'description'
+          setUploadedImages(response.data);
+        } catch (error) {
+          console.error('Error al obtener las imágenes:', error);
+        }
+      };
+  
+      fetchUploadedImages();
+    }, []);
   
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
@@ -189,6 +204,16 @@ export default function GaleriaAdmin() {
         return;
       }
   
+      // Verificar que el archivo es una imagen
+      const fileType = selectedFile.type;
+      if (!fileType.startsWith('image/')) {
+        setUploadStatus('Solo se permiten archivos de imagen.');
+        return;
+      }
+  
+      setIsUploading(true);
+      setUploadStatus(null);
+  
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('description', description);
@@ -197,15 +222,42 @@ export default function GaleriaAdmin() {
         const response = await axios.post('http://localhost:8080/api/images/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            // Añadir encabezados de autenticación básica (reemplaza con tus credenciales)
             Authorization: 'Basic ' + btoa('admin:password'),
           },
         });
+  
+        // Actualizar estado con la nueva imagen subida
+        setUploadedImages((prev) => [
+          ...prev, 
+          { url: response.data.fileUrl, description: response.data.description }
+        ]);
+  
         setUploadStatus('Imagen subida exitosamente.');
-        setUploadedImages((prev) => [...prev, response.data.fileName]);
       } catch (error) {
         console.error('Error al subir la imagen:', error);
         setUploadStatus('Error al subir la imagen.');
+      } finally {
+        setIsUploading(false);
+        setSelectedFile(null);
+        setDescription('');
+      }
+    };
+  
+    const handleDeleteImage = async (imageUrl: string) => {
+      try {
+        await axios.delete(`http://localhost:8080/api/images/delete`, {
+          data: { url: imageUrl },
+          headers: {
+            Authorization: 'Basic ' + btoa('admin:password'),
+          },
+        });
+  
+        // Filtrar la imagen eliminada del estado
+        setUploadedImages(prev => prev.filter(image => image.url !== imageUrl));
+        setUploadStatus('Imagen eliminada exitosamente.');
+      } catch (error) {
+        console.error('Error al eliminar la imagen:', error);
+        setUploadStatus('Error al eliminar la imagen.');
       }
     };
   
@@ -227,7 +279,9 @@ export default function GaleriaAdmin() {
               placeholder="Descripción de la imagen"
             />
           </div>
-          <button type="submit" className="upload-button">Subir Imagen</button>
+          <button type="submit" className="upload-button" disabled={isUploading}>
+            {isUploading ? 'Subiendo...' : 'Subir Imagen'}
+          </button>
         </form>
   
         {uploadStatus && <p className="status-message">{uploadStatus}</p>}
@@ -236,7 +290,11 @@ export default function GaleriaAdmin() {
         <ul className="image-list">
           {uploadedImages.map((image, index) => (
             <li key={index} className="image-item">
-              {image}
+              <img src={image.url} alt={`Imagen ${index + 1}`} className="uploaded-image" />
+              <p>{image.description}</p>
+              <button onClick={() => handleDeleteImage(image.url)} className="delete-button">
+                Eliminar
+              </button>
             </li>
           ))}
         </ul>
@@ -245,5 +303,4 @@ export default function GaleriaAdmin() {
   };
   
   export default GaleriaAdmin;
-  
   
