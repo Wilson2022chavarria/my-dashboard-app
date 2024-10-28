@@ -1,4 +1,4 @@
-/* Estilo para el contenedor del login */
+/* Estilo para el contenedor del login 
 .login-container {
     max-width: 400px;
     margin: 50px auto;
@@ -39,7 +39,7 @@
     background-color: #0056b3;
   }
   
-  /* Estilo para los enlaces adicionales */
+  /* Estilo para los enlaces adicionales 
   .login-links {
     margin-top: 15px;
   }
@@ -54,4 +54,326 @@
   .login-links a:hover {
     text-decoration: underline;
   }
+  */
+
+
+
+/* src/styles/Login.css 
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #224873, #707273);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  background-color: white;
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.login-container h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="email"],
+input[type="password"] {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+button[type="submit"] {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #3a6fab;
+}
+
+.error {
+  color: #ff4d4f;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.login-links {
+  margin-top: 1.5rem;
+}
+
+.login-links a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+  color: #3a6fab;
+}
+*/
+
+
+
+
+
+/* Fondo de la página 
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #224873, #707273);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Estilo para el contenedor del login 
+.login-container {
+  background-color: white;
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Título del formulario 
+.login-container h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Formulario 
+.login-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Campos de entrada ovalados *
+input[type="email"],
+input[type="password"] {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 25px; /* Ovalados 
+  transition: border-color 0.3s ease;
+  font-size: 1rem;
+  padding-left: 1.5rem;
+}
+
+/* Efecto al hacer foco en los campos de entrada 
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+/* Botón de envío ovalado 
+button[type="submit"] {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border-radius: 25px; /* Ovalado *
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+/* Efecto hover en el botón *
+button[type="submit"]:hover {
+  background-color: #3a6fab;
+}
+
+/* Mensaje de error *
+.error {
+  color: #ff4d4f;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+/* Enlaces adicionales *
+.login-links {
+  margin-top: 1.5rem;
+}
+
+.login-links a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+  color: #3a6fab;
+}
+*/
+
+
+/* Fondo degradado para la página */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #224873, #707273);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Estilo para el contenedor del login */
+.login-container {
+  background-color: white;
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo del título */
+.login-container h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Estilo para el formulario */
+.login-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Campos de entrada con estilo ovalado y transición */
+input[type="email"],
+input[type="password"] {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 25px; /* Bordes ovalados */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 1rem;
+}
+
+/* Efecto al enfocar los campos */
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+  outline: none;
+}
+
+/* Botón de envío con estilo ovalado y transición */
+button[type="submit"] {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border-radius: 25px; /* Bordes ovalados */
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s, box-shadow 0.2s;
+}
+
+button[type="submit"]:hover {
+  background-color: #3a6fab;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(58, 111, 171, 0.4);
+}
+
+button[type="submit"]:active {
+  background-color: #003d80;
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* Estilo para el mensaje de error */
+.error {
+  color: #ff4d4f;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+/* Estilo para los enlaces adicionales 
+.login-links {
+  margin-top: 1.5rem;
+}
+
+.login-links a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  padding: 0 0.8rem; /* Espacio adicional para mejor separación 
   
+}
+
+.login-links a:hover {
+  color: #3a6fab;
+}
+*/
+
+/* Estilo para los enlaces adicionales */
+.login-links {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column; /* Cambia a columna para que se apilen */
+  align-items: center;
+  gap: 0.5rem; /* Espacio entre los enlaces */
+}
+
+.login-links a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+  color: #3a6fab;
+}
