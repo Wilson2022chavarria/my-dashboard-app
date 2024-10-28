@@ -159,23 +159,22 @@ export default function GaleriaAdmin() {
   };
   
   export default GaleriaAdmin; */
-
-  import React, { useState, useEffect } from 'react';
   import axios from 'axios';
-  import '../styles/GaleriaAdmin.css';
+import React, { useEffect, useState } from 'react';
+import '../styles/GaleriaAdmin.css';
   
   const GaleriaAdmin = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [description, setDescription] = useState('');
     const [uploadStatus, setUploadStatus] = useState<string | null>(null);
-    const [uploadedImages, setUploadedImages] = useState<{ url: string, description: string }[]>([]);
+    const [uploadedImages, setUploadedImages] = useState<{ id: number; fileName: string, name: string }[]>([]);
     const [isUploading, setIsUploading] = useState(false);
   
     // Fetch imágenes cargadas previamente cuando se monta el componente
     useEffect(() => {
       const fetchUploadedImages = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/api/images');
+          const response = await axios.get('http://localhost:8080/api/images/list');
           // Se asume que el servidor devuelve una lista de objetos con 'url' y 'description'
           setUploadedImages(response.data);
         } catch (error) {
@@ -229,7 +228,10 @@ export default function GaleriaAdmin() {
         // Actualizar estado con la nueva imagen subida
         setUploadedImages((prev) => [
           ...prev, 
-          { url: response.data.fileUrl, description: response.data.description }
+          {
+            id: response.data.id,
+            fileName: response.data.fileName,
+            name: response.data.name }
         ]);
   
         setUploadStatus('Imagen subida exitosamente.');
@@ -243,17 +245,16 @@ export default function GaleriaAdmin() {
       }
     };
   
-    const handleDeleteImage = async (imageUrl: string) => {
+    const handleDeleteImage = async (imageId: number) => {
       try {
-        await axios.delete(`http://localhost:8080/api/images/delete`, {
-          data: { url: imageUrl },
+        await axios.delete(`http://localhost:8080/api/images/delete/${imageId}`, {
           headers: {
             Authorization: 'Basic ' + btoa('admin:password'),
           },
         });
   
         // Filtrar la imagen eliminada del estado
-        setUploadedImages(prev => prev.filter(image => image.url !== imageUrl));
+        setUploadedImages(prev => prev.filter(image => image.id !== imageId));
         setUploadStatus('Imagen eliminada exitosamente.');
       } catch (error) {
         console.error('Error al eliminar la imagen:', error);
@@ -290,9 +291,9 @@ export default function GaleriaAdmin() {
         <ul className="image-list">
           {uploadedImages.map((image, index) => (
             <li key={index} className="image-item">
-              <img src={image.url} alt={`Imagen ${index + 1}`} className="uploaded-image" />
-              <p>{image.description}</p>
-              <button onClick={() => handleDeleteImage(image.url)} className="delete-button">
+              <img src={`http://localhost:8080/uploads/${image.fileName}`} alt={`Imagen ${index + 1}`} className="uploaded-image" />
+              <p>{image.name}</p>
+              <button onClick={() => handleDeleteImage(image.id)} className="delete-button">
                 Eliminar
               </button>
             </li>
@@ -303,4 +304,3 @@ export default function GaleriaAdmin() {
   };
   
   export default GaleriaAdmin;
-  

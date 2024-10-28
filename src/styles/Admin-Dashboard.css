@@ -92,6 +92,7 @@
   width: 200px; /* Añadido para que todos los botones tengan el mismo tamaño */
 }
 
+
 .search-header button:hover {
   background-color: #2980b9;
 }
@@ -118,9 +119,10 @@
   background-color: #f9f9f9;
 }
 
-.solicitudes-list td button {
-  padding: 8px 15px;
-  background-color: #3498db;
+.solicitudes-list td button.detalles {
+  padding: 5px 10px;
+  margin: 2px;
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
   border-radius: 5px;
@@ -128,9 +130,39 @@
   transition: background-color 0.3s ease;
 }
 
-.solicitudes-list td button:hover {
-  background-color: #2980b9;
+.button.detalles:hover {
+ background-color: black;
 }
+
+.button.btn-detalles {
+  padding: 5px 10px;
+  margin: 2px;
+  background-color: rgba(172, 255, 47, 0.87);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button btn-detalles:hover{
+  background-color: greenyellow;
+}
+.solicitudes-list td button.rechazar {
+  padding: 5px 10px;
+  margin: 2px;
+  background-color: rgba(255, 0, 0, 0.682);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.solicitudes-list td button.rechazar:hover {
+background-color: red;
+}
+
 
 /* User Menu */
 .user-menu {
@@ -208,4 +240,82 @@
 
 .modal-footer button:hover {
   background-color: #2980b9;
+}
+
+
+.button-container {
+  display: flex;           /* Usar flexbox para alinear los botones horizontalmente */
+  gap: 10px;               /* Espacio entre los botones */
+  justify-content: center;  /* Centrar horizontalmente */
+  align-items: flex-start;      /* Centrar verticalmente */
+  margin: 10px 0;          /* Espaciado adicional arriba y abajo del contenedor */
+}
+
+
+
+/* Estilos de los botones (igual que antes) */
+.btn-aprobar{
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 3px 3px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-aprobar:hover {
+  background-color: #388E3C;
+}
+
+.btn-rechazar {
+  background-color: #F44336;
+  color: white;
+  border: none;
+  padding: 3px 3px;
+  border-radius: 5px;
+  cursor: pointer;
+
+}
+
+.btn-rechazar:hover {
+  background-color: #D32F2F;
+}
+
+.btn-activo {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 3px 3px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-activo:hover {
+  background-color: #1976D2;
+}
+
+.btn-inactivo {
+  background-color: #9E9E9E;
+  color: white;
+  border: none;
+  padding: 3px 3px;
+  border-radius: 5px;
+  cursor: not-allowed;
+}
+
+.btn-inactivo:hover {
+  background-color: #757575;
+}
+
+.btn-detalles {
+  background-color: #00BCD4;
+  color: white;
+  border: none;
+  padding: 3px 3px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-detalles:hover {
+  background-color: #008BA3;
 }

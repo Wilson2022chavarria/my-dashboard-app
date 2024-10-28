@@ -36,7 +36,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile /> {/* Llamamos al componente de perfil */}
+             <Profile /> 
             </ProtectedRoute>
           }
         />
