@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(true);
 
+  
   useEffect(() => {
     const fetchDatos = async () => {
       try {
