@@ -32,7 +32,7 @@ const UserMenu: React.FC = () => {
 
   return (
     <div className="user-menu">
-      <button className="icon-button" onClick={toggleDropdown}>
+      <button className="icon-button" onClick={() => {}}>
         🔔
       </button>
       <div className="dropdown">

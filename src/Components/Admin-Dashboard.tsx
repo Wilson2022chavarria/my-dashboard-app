@@ -52,8 +52,8 @@ export default function AdminDashboard() {
           direccion: voluntariado.direccion,
           comentarios: voluntariado.comentarios,
           tipoSolicitud: 'Voluntariado',
-          estadouser: voluntariado.estadoUsuario? 'Activo' : 'Inactivo',
-          estado: voluntariado.estadoAprobado ? 'Aprobada' : 'Pendiente',
+          estadouser: voluntariado.estadoUsuario ? 'Activo' : 'Inactivo',
+          estado: voluntariado.estadoAprobado === null ? 'Pendiente' : voluntariado.estadoAprobado ? 'Aprobada' : 'Rechazada',
         }));
 
         const solicitudesDonantes = donantesData.map((donante: any) => ({
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
           descripDonacion: donante.descripDonacion,
           tipoSolicitud: 'Donación',
           estadouser: donante.estadoUsuario? 'Activo' : 'Inactivo',
-          estado: donante.estadoAprobado ? 'Aprobada' : 'Pendiente',
+          estado: donante.estadoAprobado === null ? 'Pendiente' : donante.estadoAprobado ? 'Aprobada' : 'Rechazada',
         }));
 
         const solicitudesAdultosMayores = adultosMayoresData.map((adulto: any) => ({
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
           generoEncargado: adulto.generoEncargado,
           tipoSolicitud: 'RegistrarAdultoMayor',
           estadouser: adulto.estadoUsuario? 'Activo' : 'Inactivo',
-          estado: adulto.estadoAprobado ? 'Aprobada' : 'Pendiente',
+          estado: adulto.estadoAprobado === null ? 'Pendiente' : adulto.estadoAprobado ? 'Aprobada' : 'Rechazada',
         }));
 
         const solicitudesAsociados = asociadosData.map((asociado: any) => ({
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
           observaciones: asociado.observaciones,
           tipoSolicitud: 'Asociación',
           estadouser: asociado.estadoUsuario? 'Activo' : 'Inactivo',
-          estado: asociado.estadoAprobado ? 'Aprobada' : 'Pendiente',
+          estado: asociado.estadoAprobado === null ? 'Pendiente' : asociado.estadoAprobado ? 'Aprobada' : 'Rechazada',
         }));
 
         setSolicitudes([
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
   const renderFila = (solicitud: Solicitud) => {
     if (solicitud.tipoSolicitud === 'Voluntariado') {
       return (
-        <tr key={solicitud.id}>
+        <tr key={solicitud.tipoSolicitud + solicitud.id}>
           <td>{solicitud.id}</td>
           <td>{solicitud.nombre}</td>
           <td>{solicitud.apellido1}</td>
@@ -284,10 +284,10 @@ export default function AdminDashboard() {
           <td>
             <div className='button-container'>
               <button className="btn-detalles" onClick={() => openModal('details', solicitud)}>Detalles</button>
-              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.id)}>Aprobar</button>
-              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.id)}>Rechazar</button>
-              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.id)}>Activo/a</button>
-              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.id)}>Inactivo/a</button>
+              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Aprobar</button>
+              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Rechazar</button>
+              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Activo/a</button>
+              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Inactivo/a</button>
             </div>
               
           </td>
@@ -295,7 +295,7 @@ export default function AdminDashboard() {
       );
     } else if (solicitud.tipoSolicitud === 'Donación') {
       return (
-        <tr key={solicitud.id}>
+        <tr key={solicitud.tipoSolicitud + solicitud.id}>
           <td>{solicitud.id}</td>
           <td>{solicitud.nombre}</td>
           <td>{solicitud.apellido1}</td>
@@ -314,17 +314,17 @@ export default function AdminDashboard() {
           <td>
             <div className='button-container'>
               <button className="btn-detalles" onClick={() => openModal('details', solicitud)}>Detalles</button>
-              <button className="btn-aprobar" onClick={() => openModal('update', solicitud)}>Aprobar</button>
-              <button className="btn-rechazar" onClick={() => openModal('update', solicitud)}>Rechazar</button>
-              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.id)}>Activo/a</button>
-              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.id)}>Inactivo/a</button>
+              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Aprobar</button>
+              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Rechazar</button>
+              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Activo/a</button>
+              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Inactivo/a</button>
             </div>
           </td>
         </tr>
       );
     } else if (solicitud.tipoSolicitud === 'RegistrarAdultoMayor') {
       return (
-        <tr key={solicitud.id}>
+        <tr key={solicitud.tipoSolicitud + solicitud.id}>
           <td>{solicitud.id}</td>
           <td>{solicitud.nombre}</td>
           <td>{solicitud.apellido1}</td>
@@ -355,10 +355,10 @@ export default function AdminDashboard() {
           <td>
             <div className='button-container'>
               <button className="btn-detalles" onClick={() => openModal('details', solicitud)}>Detalles</button>
-              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.id)}>Aprobar</button>
-              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.id)}>Rechazar</button>
-              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.id)}>Activo/a</button>
-              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.id)}>Inactivo/a</button>
+              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Aprobar</button>
+              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Rechazar</button>
+              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Activo/a</button>
+              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Inactivo/a</button>
             </div>
           </td>
 
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
       );
     } else if (solicitud.tipoSolicitud === 'Asociación') {
       return (
-        <tr key={solicitud.id}>
+        <tr key={solicitud.tipoSolicitud + solicitud.id}>
           <td>{solicitud.id}</td>
           <td>{solicitud.nombre}</td>
           <td>{solicitud.apellido1}</td>
@@ -383,10 +383,10 @@ export default function AdminDashboard() {
           <td>
             <div className='button-container'>
               <button className="btn-detalles" onClick={() => openModal('details', solicitud)}>Detalles</button>
-              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.id)}>Aprobar</button>
-              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.id)}>Rechazar</button>
-              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.id)}>Activo/a</button>
-              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.id)}>Inactivo/a</button>
+              <button className="btn-aprobar" onClick={() => handleAprobarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Aprobar</button>
+              <button className="btn-rechazar" onClick={() => handleRechazarSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Rechazar</button>
+              <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Activo/a</button>
+              <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Inactivo/a</button>
             </div>
           </td>
         </tr>
@@ -405,20 +405,40 @@ export default function AdminDashboard() {
     setModalOpen(true);
   };
 
+  // Función que devuelve el path de la URL según tipo solicitud
+  const getUrlTipoSolicitud = (tipoSolicitud: string): string => {
+    switch (tipoSolicitud) {
+      case 'Voluntariado':
+        return 'http://localhost:8080/api/voluntariado';
+      case 'Donación':
+        return 'http://localhost:8080/api/donante';
+      case 'RegistrarAdultoMayor':
+        return 'http://localhost:8080/api/adultomayor';
+      case 'Asociación':
+        return 'http://localhost:8080/api/asociado';
+      default:
+        throw Error('Tipo solicitud inválido');
+    }
+  }
+
   // Función para actualizar el estado de aprobación de una solicitud
-  const handleAprobarSolicitud = (id: string) => {
+  const handleAprobarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+    await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=true`, { method: 'PUT' });
     const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.id === id) {
+      if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
         return { ...solicitud, estado: 'Aprobada' }; // Cambiar el estado a 'Aprobada'
       }
       return solicitud;
     });
     setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
   };
-  
-  const handleRechazarSolicitud = (id: string) => {
+
+  const handleRechazarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+    await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=false`, { method: 'PUT' });
     const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.id === id) {
+      if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
         return { ...solicitud, estado: 'Rechazada' }; // Cambiar el estado a 'Rechazada'
       }
       return solicitud;
@@ -429,9 +449,11 @@ export default function AdminDashboard() {
 
 
    // Función para actualizar el estado de aprobación de una solicitud
-   const handleActivaSolicitud = (id: string) => {
+   const handleActivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+    await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=true`, { method: 'PUT' });
     const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.id === id) {
+      if (solicitud.id === idSolicitud) {
         return { ...solicitud, estadouser: 'Activo' }; // Cambiar el estado a 'Aprobada'
       }
       return solicitud;
@@ -439,9 +461,11 @@ export default function AdminDashboard() {
     setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
   };
   
-  const handleInactivaSolicitud = (id: string) => {
+  const handleInactivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+    await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=false`, { method: 'PUT' });
     const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.id === id) {
+      if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
         return { ...solicitud, estadouser: 'Inactivo' }; // Cambiar el estado a 'Rechazada'
       }
       return solicitud;
@@ -499,6 +523,8 @@ const handleSubmitModal = (updatedSolicitud: Solicitud) => {
       </aside>
 
       <main className="main-content">
+        <UserMenu />
+
         {activeTab === 'overview' ? (
           <OverviewGrid solicitudesPorTipo={solicitudesPorTipo} />
         ) : activeTab === 'galeria' ? (
@@ -529,7 +555,7 @@ const handleSubmitModal = (updatedSolicitud: Solicitud) => {
           </>
         )}
 
-{modalOpen && (
+        {modalOpen && (
           <Modal
             type={modalType}
             solicitud={selectedSolicitud}
@@ -542,8 +568,6 @@ const handleSubmitModal = (updatedSolicitud: Solicitud) => {
 
         
       </main>
-
-      <UserMenu />
     </div>
   );
 }
