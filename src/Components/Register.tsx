@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import '../styles/Register.css';
 
 export default function Register() {
@@ -12,23 +13,32 @@ export default function Register() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  /*
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:8080/api/auth/register', formData);
-      setSuccess(true);
-      setError(null);
-    } catch (err) {
-      console.error('Error al registrar el administrador:', err);
-      setError('Error al registrar el administrador. Inténtalo nuevamente.');
-    }
-  }; */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Datos del formulario:', formData); // <-- Añade esto para ver los datos
     try {
       await axios.post('http://localhost:8080/api/auth/register', formData);
+       /* Mostrar SweetAlert de éxito
+       Swal.fire({
+        title: 'Registro exitoso',
+        text: 'Ahora puedes iniciar sesión.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#007bff'
+       }); */
+       // Mostrar SweetAlert de éxito con opción de ir al login
+      Swal.fire({
+        title: 'Registro exitoso',
+        text: 'Ahora puedes iniciar sesión.',
+        icon: 'success',
+        confirmButtonText: 'Ir al login',
+        confirmButtonColor: '#007bff'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirige al login si el usuario confirma
+          window.location.href = '/login';
+        }
+      });
       setSuccess(true);
       setError(null);
     } catch (err) {
@@ -36,6 +46,7 @@ export default function Register() {
       setError('Error al registrar el administrador. Inténtalo nuevamente.');
     }
   };
+
   
   return (
     <div className="register-container">
