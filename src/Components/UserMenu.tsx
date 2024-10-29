@@ -32,22 +32,15 @@ const UserMenu: React.FC = () => {
 
   return (
     <div className="user-menu">
-      <button className="icon-button" onClick={() => {}}>
-        🔔
-      </button>
       <div className="dropdown">
         <button className="dropdown-button" onClick={toggleDropdown}>
           Admin ▼
         </button>
         {isDropdownOpen && (
           <div className="dropdown-content">
-            <span className="dropdown-label">Mi Cuenta</span>
             <hr className="dropdown-separator" />
             <button className="dropdown-item" onClick={handleProfile}>
               Perfil
-            </button>
-            <button className="dropdown-item" onClick={handleSettings}>
-              Configuración
             </button>
             <button className="dropdown-item" onClick={handleLogout}>
               Cerrar Sesión

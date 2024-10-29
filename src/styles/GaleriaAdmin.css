@@ -123,3 +123,15 @@ h2, h3 {
 .delete-button:hover {
   background-color: #c0392b;
 }
+.image-details {
+  margin-top: 10px;
+}
+
+.image-name {
+  font-weight: bold;
+}
+
+.image-description {
+  font-style: italic;
+  color: #666;
+}

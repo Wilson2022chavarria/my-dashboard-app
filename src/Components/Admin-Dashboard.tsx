@@ -541,9 +541,7 @@ const handleSubmitModal = (updatedSolicitud: Solicitud) => {
               <select onChange={(e) => setSearchType(e.target.value as SearchType)}>
                 <option value="nombre">Nombre</option>
                 <option value="cedula">Cédula</option>
-                <option value="mes">Mes</option>
               </select>
-              <button onClick={() => openModal('add')}>Agregar solicitud</button>
             </header>
 
             <section className="solicitudes-list">
