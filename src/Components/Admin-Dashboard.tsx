@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import GaleriaAdmin from '../Components/GaleríaAdmin';
 import '../styles/admin-dashboard.css';
@@ -13,14 +13,14 @@ export default function AdminDashboard() {
   const [searchType, setSearchType] = useState<SearchType>('nombre');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('todas');
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'details' | 'update'>('add');
   const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
-  
   useEffect(() => {
     const fetchDatos = async () => {
       try {
@@ -89,7 +89,6 @@ export default function AdminDashboard() {
           patologías: adulto.patologías,
           medicamento: adulto.medicamento,
           dosis: adulto.dosis,
-
           cedulaEncargado: adulto.cedulaEncargado,
           nombreEncargado: adulto.nombreEncargado,
           apellido1Encargado: adulto.apellido1Encargado,
@@ -136,9 +135,9 @@ export default function AdminDashboard() {
     };
 
     fetchDatos();
-  const interval = setInterval(fetchDatos, 1000); 
+    const interval = setInterval(fetchDatos, 1000); 
 
-  return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
 
   const solicitudesPorTipo = {
@@ -171,8 +170,23 @@ export default function AdminDashboard() {
       });
   }, [solicitudes, searchType, searchQuery, activeTab]);
 
-  
-  // Agregar cabeceras de tabla para cada tipo de solicitud
+  const paginatedSolicitudes = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredSolicitudes.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredSolicitudes, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredSolicitudes.length / itemsPerPage);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newItemsPerPage = parseInt(event.target.value, 10);
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
+
   const renderTablaCabeceras = (tipo: string) => {
     switch (tipo) {
       case 'voluntariado':
@@ -230,7 +244,6 @@ export default function AdminDashboard() {
             <th>Patologías</th>
             <th>Medicamento</th>
             <th>Dosis</th>
-
             <th>Nombre encargado</th>
             <th>Primer apellido encargado</th>
             <th>Segundo apellido encargado</th>
@@ -268,7 +281,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Renderizar las filas de cada solicitud según su tipo
   const renderFila = (solicitud: Solicitud) => {
     if (solicitud.tipoSolicitud === 'Voluntariado') {
       return (
@@ -293,7 +305,6 @@ export default function AdminDashboard() {
               <button className="btn-activo" onClick={() => handleActivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Activo/a</button>
               <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Inactivo/a</button>
             </div>
-              
           </td>
         </tr>
       );
@@ -342,8 +353,6 @@ export default function AdminDashboard() {
           <td>{solicitud.patologías}</td>
           <td>{solicitud.medicamento}</td>
           <td>{solicitud.dosis}</td>
-
-
           <td>{solicitud.nombreEncargado}</td>
           <td>{solicitud.apellido1Encargado}</td>
           <td>{solicitud.apellido2Encargado}</td>
@@ -355,7 +364,6 @@ export default function AdminDashboard() {
           <td>{solicitud.tipoSolicitud}</td>
           <td>{solicitud.estadouser}</td>
           <td>{solicitud.estado}</td>
-          
           <td>
             <div className='button-container'>
               <button className="btn-detalles" onClick={() => openModal('details', solicitud)}>Detalles</button>
@@ -365,8 +373,6 @@ export default function AdminDashboard() {
               <button className="btn-inactivo" onClick={() => handleInactivaSolicitud(solicitud.tipoSolicitud, solicitud.id)}>Inactivo/a</button>
             </div>
           </td>
-
-         
         </tr>
       );
     } else if (solicitud.tipoSolicitud === 'Asociación') {
@@ -409,7 +415,6 @@ export default function AdminDashboard() {
     setModalOpen(true);
   };
 
-  // Función que devuelve el path de la URL según tipo solicitud
   const getUrlTipoSolicitud = (tipoSolicitud: string): string => {
     switch (tipoSolicitud) {
       case 'Voluntariado':
@@ -425,17 +430,16 @@ export default function AdminDashboard() {
     }
   }
 
-  // Función para actualizar el estado de aprobación de una solicitud
   const handleAprobarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
     let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
     await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=true`, { method: 'PUT' });
     const updatedSolicitudes = solicitudes.map((solicitud) => {
       if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
-        return { ...solicitud, estado: 'Aprobada' }; // Cambiar el estado a 'Aprobada'
+        return { ...solicitud, estado: 'Aprobada' };
       }
       return solicitud;
     });
-    setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
+    setSolicitudes(updatedSolicitudes);
   };
 
   const handleRechazarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
@@ -464,18 +468,16 @@ export default function AdminDashboard() {
     }
   };
 
-
-   // Función para actualizar el estado de aprobación de una solicitud
-   const handleActivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+  const handleActivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
     let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
     await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=true`, { method: 'PUT' });
     const updatedSolicitudes = solicitudes.map((solicitud) => {
       if (solicitud.id === idSolicitud) {
-        return { ...solicitud, estadouser: 'Activo' }; // Cambiar el estado a 'Aprobada'
+        return { ...solicitud, estadouser: 'Activo' };
       }
       return solicitud;
     });
-    setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
+    setSolicitudes(updatedSolicitudes);
   };
 
   const handleInactivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
@@ -503,9 +505,9 @@ export default function AdminDashboard() {
       Swal.fire('Inactivo', 'El usuario ha sido marcado como inactivo.', 'success');
     }
   };
+
   const handleAddSolicitud = (newSolicitud: Omit<Solicitud, 'id'>) => {
     const newId = (parseInt(solicitudes[solicitudes.length - 1].id) + 1).toString().padStart(3, '0');
-    
     setSolicitudes(prevSolicitudes => [{...newSolicitud, id: newId}, ...prevSolicitudes]);
     setModalOpen(false);
   };
@@ -520,18 +522,14 @@ export default function AdminDashboard() {
     setSelectedSolicitud(null);
   };
 
+  const handleSubmitModal = (updatedSolicitud: Solicitud) => {
+    setSolicitudes(prevSolicitudes => 
+      prevSolicitudes.map(solicitud => 
+        solicitud.id === updatedSolicitud.id ? updatedSolicitud : solicitud
+      )
+    );
+  };
 
-
-
-  // Función para manejar la aprobación/rechazo de la solicitud
-const handleSubmitModal = (updatedSolicitud: Solicitud) => {
-  setSolicitudes(prevSolicitudes => 
-    prevSolicitudes.map(solicitud => 
-      solicitud.id === updatedSolicitud.id ? updatedSolicitud : solicitud
-    )
-  );
-  
-};
   return (
     <div className="admin-dashboard">
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
@@ -577,9 +575,32 @@ const handleSubmitModal = (updatedSolicitud: Solicitud) => {
             <section className="solicitudes-list">
               <table>
                 <thead>{renderTablaCabeceras(activeTab)}</thead>
-                <tbody>{filteredSolicitudes.map(renderFila)}</tbody>
+                <tbody>{paginatedSolicitudes.map(renderFila)}</tbody>
               </table>
             </section>
+
+            <div className="pagination">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </button>
+              <span>{`Página ${currentPage} de ${totalPages}`}</span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Siguiente
+              </button>
+              <select value={itemsPerPage} onChange={handleItemsPerPageChange} className="items-per-page">
+                <option value="6">6 por página</option>
+                <option value="12">12 por página</option>
+                <option value="24">24 por página</option>
+                <option value="48">48 por página</option>
+                <option value="96">96 por página</option>
+              </select>
+            </div>
           </>
         )}
 
@@ -589,12 +610,12 @@ const handleSubmitModal = (updatedSolicitud: Solicitud) => {
             solicitud={selectedSolicitud}
             onAdd={handleAddSolicitud}
             onUpdate={handleUpdateStatus}
-            onSubmit={handleSubmitModal}
+            onSubm
+
+it={handleSubmitModal}
             onClose={() => setModalOpen(false)}
           />
         )}
-
-        
       </main>
     </div>
   );
