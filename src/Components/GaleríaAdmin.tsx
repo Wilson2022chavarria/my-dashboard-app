@@ -15,6 +15,8 @@ const GaleriaAdmin = () => {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [uploadedImages, setUploadedImages] = useState<Image[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editDescription, setEditDescription] = useState('');
 
   useEffect(() => {
     const fetchUploadedImages = async () => {
@@ -105,6 +107,36 @@ const GaleriaAdmin = () => {
     }
   };
 
+  const handleEditDescription = (image: Image) => {
+    setEditingId(image.id);
+    setEditDescription(image.description);
+  };
+
+  const handleSaveDescription = async (imageId: number) => {
+    try {
+      await axios.put(`http://localhost:8080/api/images/update/${imageId}`, 
+        null, // Cuerpo vacío para que el request body se interprete correctamente
+        {
+          params: {
+            description: editDescription, // Parámetro de la descripción en la URL
+          },
+          headers: {
+            Authorization: 'Basic ' + btoa('admin:password'),
+          },
+        }
+      );
+
+      setUploadedImages(prev => prev.map(img => 
+        img.id === imageId ? { ...img, description: editDescription } : img
+      ));
+      setEditingId(null);
+      setUploadStatus('Descripción actualizada exitosamente.');
+    } catch (error) {
+      console.error('Error al actualizar la descripción:', error);
+      setUploadStatus('Error al actualizar la descripción.');
+    }
+  };
+
   return (
     <div className="galeria-admin-container">
       <h2>Galería - Admin</h2>
@@ -137,7 +169,25 @@ const GaleriaAdmin = () => {
             <img src={`http://localhost:8080/uploads/${image.fileName}`} alt={image.name} className="uploaded-image" />
             <div className="image-details">
               <p className="image-name">{image.name}</p>
-              <p className="image-description">{image.description}</p>
+              {editingId === image.id ? (
+                <div className="edit-description">
+                  <input
+                    type="text"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="edit-description-input"
+                  />
+                  <div className="edit-buttons">
+                    <button onClick={() => handleSaveDescription(image.id)} className="save-button">Guardar</button>
+                    <button onClick={() => setEditingId(null)} className="cancel-button">Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="image-description">{image.description}</p>
+                  <button onClick={() => handleEditDescription(image)} className="edit-button">Editar</button>
+                </>
+              )}
             </div>
             <button onClick={() => handleDeleteImage(image.id)} className="delete-button">
               Eliminar

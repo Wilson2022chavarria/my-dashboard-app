@@ -33,7 +33,7 @@ h2, h3 {
   color: #555;
 }
 
-#file-input, #description-input {
+#file-input, #description-input, .edit-description-input {
   padding: 8px 12px;
   width: 100%;
   border: 1px solid #ddd;
@@ -45,15 +45,18 @@ h2, h3 {
   padding: 6px;
 }
 
-.upload-button {
+.upload-button, .edit-button, .save-button, .cancel-button {
   padding: 10px 15px;
-  background-color: #007bff;
-  color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   transition: background-color 0.3s;
+}
+
+.upload-button {
+  background-color: #007bff;
+  color: #fff;
 }
 
 .upload-button:hover {
@@ -76,7 +79,7 @@ h2, h3 {
 /* Galería de imágenes */
 .image-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
   list-style: none;
   padding: 0;
@@ -99,11 +102,20 @@ h2, h3 {
   border-bottom: 1px solid #ddd;
 }
 
-.image-item p {
-  margin: 10px 0;
-  padding: 0 10px;
-  font-size: 14px;
-  color: #555;
+.image-details {
+  margin-top: 10px;
+  padding: 0 10px 10px;
+}
+
+.image-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.image-description {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 10px;
 }
 
 /* Botón eliminar */
@@ -123,15 +135,45 @@ h2, h3 {
 .delete-button:hover {
   background-color: #c0392b;
 }
-.image-details {
+
+/* Estilos para la funcionalidad de edición */
+.edit-description {
   margin-top: 10px;
 }
 
-.image-name {
-  font-weight: bold;
+.edit-description-input {
+  margin-bottom: 10px;
 }
 
-.image-description {
-  font-style: italic;
-  color: #666;
+.edit-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.edit-button {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.edit-button:hover {
+  background-color: #218838;
+}
+
+.save-button {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.save-button:hover {
+  background-color: #138496;
+}
+
+.cancel-button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.cancel-button:hover {
+  background-color: #c82333;
 }
