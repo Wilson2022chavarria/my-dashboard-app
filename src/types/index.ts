@@ -22,6 +22,7 @@ export type Solicitud =
   estado: string
   };
   
+  
   export type DonanteSolicitud = {
     id: string;
     nombre: string;
