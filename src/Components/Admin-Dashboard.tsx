@@ -6,6 +6,7 @@ import { SearchType, Solicitud } from '../types';
 import Modal from './Modal';
 import OverviewGrid from './Overview-Grid';
 import UserMenu from './UserMenu';
+import Swal from 'sweetalert2';
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -135,6 +136,9 @@ export default function AdminDashboard() {
     };
 
     fetchDatos();
+  const interval = setInterval(fetchDatos, 1000); 
+
+  return () => clearInterval(interval);
   }, []);
 
   const solicitudesPorTipo = {
@@ -435,17 +439,30 @@ export default function AdminDashboard() {
   };
 
   const handleRechazarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
-    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
-    await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=false`, { method: 'PUT' });
-    const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
-        return { ...solicitud, estado: 'Rechazada' }; // Cambiar el estado a 'Rechazada'
-      }
-      return solicitud;
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción rechazará la solicitud.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, rechazar',
+      cancelButtonText: 'Cancelar'
     });
-    setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
+  
+    if (result.isConfirmed) {
+      let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+      await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=false`, { method: 'PUT' });
+  
+      const updatedSolicitudes = solicitudes.map((solicitud) => {
+        if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
+          return { ...solicitud, estado: 'Rechazada' };
+        }
+        return solicitud;
+      });
+      setSolicitudes(updatedSolicitudes);
+  
+      Swal.fire('Rechazada', 'La solicitud ha sido rechazada.', 'success');
+    }
   };
-
 
 
    // Función para actualizar el estado de aprobación de una solicitud
@@ -460,19 +477,32 @@ export default function AdminDashboard() {
     });
     setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
   };
-  
-  const handleInactivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
-    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
-    await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=false`, { method: 'PUT' });
-    const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
-        return { ...solicitud, estadouser: 'Inactivo' }; // Cambiar el estado a 'Rechazada'
-      }
-      return solicitud;
-    });
-    setSolicitudes(updatedSolicitudes); // Actualiza el estado de las solicitudes
-  };
 
+  const handleInactivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción marcará al usuario como inactivo.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, inactivar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (result.isConfirmed) {
+      let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+      await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=false`, { method: 'PUT' });
+  
+      const updatedSolicitudes = solicitudes.map((solicitud) => {
+        if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
+          return { ...solicitud, estadouser: 'Inactivo' };
+        }
+        return solicitud;
+      });
+      setSolicitudes(updatedSolicitudes);
+  
+      Swal.fire('Inactivo', 'El usuario ha sido marcado como inactivo.', 'success');
+    }
+  };
   const handleAddSolicitud = (newSolicitud: Omit<Solicitud, 'id'>) => {
     const newId = (parseInt(solicitudes[solicitudes.length - 1].id) + 1).toString().padStart(3, '0');
     
