@@ -429,82 +429,176 @@ export default function AdminDashboard() {
         throw Error('Tipo solicitud inválido');
     }
   }
+  
 
   const handleAprobarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
-    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
-    await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=true`, { method: 'PUT' });
-    const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
-        return { ...solicitud, estado: 'Aprobada' };
+      const solicitudActual = solicitudes.find(
+          (solicitud) => solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud
+      );
+  
+      if (solicitudActual?.estado === 'Aprobada') {
+          Swal.fire({
+              title: 'Solicitud ya aprobada',
+              text: 'Esta solicitud ya ha sido aprobada.',
+              icon: 'info',
+              confirmButtonText: 'Aceptar'
+          });
+          return;
       }
-      return solicitud;
-    });
-    setSolicitudes(updatedSolicitudes);
+  
+      const confirmResult = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: '¿Deseas aprobar esta solicitud?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, aprobar',
+          cancelButtonText: 'Cancelar'
+      });
+  
+      if (confirmResult.isConfirmed) {
+          let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+          await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=true`, { method: 'PUT' });
+  
+          const updatedSolicitudes = solicitudes.map((solicitud) => {
+              if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
+                  return { ...solicitud, estado: 'Aprobada' };
+              }
+              return solicitud;
+          });
+          setSolicitudes(updatedSolicitudes);
+  
+          Swal.fire({
+              title: 'Aprobado',
+              text: 'La solicitud ha sido aprobada exitosamente.',
+              icon: 'success',
+              confirmButtonText: 'Aceptar'
+          });
+      }
   };
-
+  
   const handleRechazarSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: "Esta acción rechazará la solicitud.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, rechazar',
-      cancelButtonText: 'Cancelar'
-    });
+      const solicitudActual = solicitudes.find(
+          (solicitud) => solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud
+      );
   
-    if (result.isConfirmed) {
-      let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
-      await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=false`, { method: 'PUT' });
-  
-      const updatedSolicitudes = solicitudes.map((solicitud) => {
-        if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
-          return { ...solicitud, estado: 'Rechazada' };
-        }
-        return solicitud;
-      });
-      setSolicitudes(updatedSolicitudes);
-  
-      Swal.fire('Rechazada', 'La solicitud ha sido rechazada.', 'success');
-    }
-  };
-
-  const handleActivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
-    let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
-    await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=true`, { method: 'PUT' });
-    const updatedSolicitudes = solicitudes.map((solicitud) => {
-      if (solicitud.id === idSolicitud) {
-        return { ...solicitud, estadouser: 'Activo' };
+      if (solicitudActual?.estado === 'Rechazada') {
+          Swal.fire({
+              title: 'Solicitud ya rechazada',
+              text: 'Esta solicitud ya ha sido rechazada.',
+              icon: 'info',
+              confirmButtonText: 'Aceptar'
+          });
+          return;
       }
-      return solicitud;
-    });
-    setSolicitudes(updatedSolicitudes);
-  };
-
-  const handleInactivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: "Esta acción marcará al usuario como inactivo.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, inactivar',
-      cancelButtonText: 'Cancelar'
-    });
   
-    if (result.isConfirmed) {
-      let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
-      await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=false`, { method: 'PUT' });
-  
-      const updatedSolicitudes = solicitudes.map((solicitud) => {
-        if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
-          return { ...solicitud, estadouser: 'Inactivo' };
-        }
-        return solicitud;
+      const result = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: "Esta acción rechazará la solicitud.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, rechazar',
+          cancelButtonText: 'Cancelar'
       });
-      setSolicitudes(updatedSolicitudes);
   
-      Swal.fire('Inactivo', 'El usuario ha sido marcado como inactivo.', 'success');
-    }
+      if (result.isConfirmed) {
+          let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+          await fetch(`${urlSolicitudRuta}/${idSolicitud}/estado?nuevoEstado=false`, { method: 'PUT' });
+  
+          const updatedSolicitudes = solicitudes.map((solicitud) => {
+              if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
+                  return { ...solicitud, estado: 'Rechazada' };
+              }
+              return solicitud;
+          });
+          setSolicitudes(updatedSolicitudes);
+  
+          Swal.fire('Rechazada', 'La solicitud ha sido rechazada.', 'success');
+      }
   };
+  
+  const handleActivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+      const solicitudActual = solicitudes.find((solicitud) => solicitud.id === idSolicitud);
+  
+      if (solicitudActual?.estadouser === 'Activo') {
+          Swal.fire({
+              title: 'Solicitud ya activa',
+              text: 'Esta solicitud ya está en estado activo.',
+              icon: 'info',
+              confirmButtonText: 'Aceptar'
+          });
+          return;
+      }
+  
+      const confirmResult = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: '¿Deseas activar esta solicitud?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, activar',
+          cancelButtonText: 'Cancelar'
+      });
+  
+      if (confirmResult.isConfirmed) {
+          let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+          await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=true`, { method: 'PUT' });
+  
+          const updatedSolicitudes = solicitudes.map((solicitud) => {
+              if (solicitud.id === idSolicitud) {
+                  return { ...solicitud, estadouser: 'Activo' };
+              }
+              return solicitud;
+          });
+          setSolicitudes(updatedSolicitudes);
+  
+          Swal.fire({
+              title: 'Activado',
+              text: 'La solicitud ha sido activada exitosamente.',
+              icon: 'success',
+              confirmButtonText: 'Aceptar'
+          });
+      }
+  };
+  
+  const handleInactivaSolicitud = async (tipoSolicitud: string, idSolicitud: string) => {
+      const solicitudActual = solicitudes.find(
+          (solicitud) => solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud
+      );
+  
+      if (solicitudActual?.estadouser === 'Inactivo') {
+          Swal.fire({
+              title: 'Solicitud ya inactiva',
+              text: 'Esta solicitud ya está en estado inactivo.',
+              icon: 'info',
+              confirmButtonText: 'Aceptar'
+          });
+          return;
+      }
+  
+      const result = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: "Esta acción marcará al usuario como inactivo.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, inactivar',
+          cancelButtonText: 'Cancelar'
+      });
+  
+      if (result.isConfirmed) {
+          let urlSolicitudRuta = getUrlTipoSolicitud(tipoSolicitud);
+          await fetch(`${urlSolicitudRuta}/${idSolicitud}/activo?nuevoActivo=false`, { method: 'PUT' });
+  
+          const updatedSolicitudes = solicitudes.map((solicitud) => {
+              if (solicitud.tipoSolicitud === tipoSolicitud && solicitud.id === idSolicitud) {
+                  return { ...solicitud, estadouser: 'Inactivo' };
+              }
+              return solicitud;
+          });
+          setSolicitudes(updatedSolicitudes);
+  
+          Swal.fire('Inactivo', 'El usuario ha sido marcado como inactivo.', 'success');
+      }
+  };
+  
 
   const handleAddSolicitud = (newSolicitud: Omit<Solicitud, 'id'>) => {
     const newId = (parseInt(solicitudes[solicitudes.length - 1].id) + 1).toString().padStart(3, '0');
