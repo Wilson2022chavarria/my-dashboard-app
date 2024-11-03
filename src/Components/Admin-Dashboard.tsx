@@ -600,6 +600,9 @@ export default function AdminDashboard() {
   };
   
 
+
+  
+
   const handleAddSolicitud = (newSolicitud: Omit<Solicitud, 'id'>) => {
     const newId = (parseInt(solicitudes[solicitudes.length - 1].id) + 1).toString().padStart(3, '0');
     setSolicitudes(prevSolicitudes => [{...newSolicitud, id: newId}, ...prevSolicitudes]);
