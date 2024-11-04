@@ -187,6 +187,25 @@ export default function AdminDashboard() {
     setCurrentPage(1);
   };
 
+  let lastScrollTop = 0;
+const userMenu = document.querySelector('.user-menu') as HTMLElement;
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+  if (scrollTop > lastScrollTop) {
+    // Si estamos desplazándonos hacia abajo, oculta el botón
+    userMenu.classList.add('hidden');
+  } else if (scrollTop <= 20) {
+    // Si estamos al inicio de la página (dentro de los primeros 20 píxeles), muestra el botón
+    userMenu.classList.remove('hidden');
+  }
+
+  lastScrollTop = scrollTop;
+});
+
+  
+
   const renderTablaCabeceras = (tipo: string) => {
     switch (tipo) {
       case 'voluntariado':

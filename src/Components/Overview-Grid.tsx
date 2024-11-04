@@ -12,10 +12,10 @@ type OverviewGridProps = {
 
 export default function OverviewGrid({ solicitudesPorTipo }: OverviewGridProps) {
   const overviewItems = [
-    { title: "Solicitudes de Voluntariado", icon: '👥', value: solicitudesPorTipo.Voluntariado.length, description: "Solicitudes activas" },
-    { title: "Donaciones Recibidas", icon: '💰', value: solicitudesPorTipo.Donación.length, description: "Solicitudes de donación" },
-    { title: "Nuevos Asociados", icon: '🤝', value: solicitudesPorTipo.Asociación.length, description: "Solicitudes de asociación" },
-    { title: "Adultos Mayores Registrados", icon: '👵', value: solicitudesPorTipo.RegistrarAdultoMayor.length, description: "Nuevos registros" },
+    { title: "Solicitudes de Voluntariado", icon: '👥', value: solicitudesPorTipo.Voluntariado.length, description: "Solicitud/es" },
+    { title: "Solicitudes de Donaciones", icon: '💰', value: solicitudesPorTipo.Donación.length, description: "Solicitud/es" },
+    { title: "Solicitudes de Asociados", icon: '🤝', value: solicitudesPorTipo.Asociación.length, description: "Solicitud/es" },
+    { title: "Solicitudes de Adultos Mayores ", icon: '👵', value: solicitudesPorTipo.RegistrarAdultoMayor.length, description: "Solicitud/es" },
   ]
 
   return (

@@ -11,7 +11,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 53px;
 }
 
 .search-header input {
@@ -61,13 +61,20 @@
   top: 20px;
   right: 20px;
   z-index: 1000; /* Asegura que esté encima de otros elementos */
+  transition: opacity 0.3s ease; /* Transición suave */
+}
+
+.hidden {
+  opacity: 0; /* Oculta el botón */
+  pointer-events: none; /* Evita la interacción cuando está oculto */
 }
 
 .user-menu button {
   background-color: #e74c3c;
   color: white;
   border: none;
-  padding: 10px 20px;
+
+  padding: 5px 20px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
