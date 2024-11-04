@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchType, setSearchType] = useState<SearchType>('nombre');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('todas');
+  const [activeTab, setActiveTab] = useState('overview'); // Cambiado de 'todas' a 'overview'
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'details' | 'update'>('add');
   const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
@@ -633,7 +633,7 @@ export default function AdminDashboard() {
         <nav>
           {[
             { icon: '📊', label: 'Dashboard', value: 'overview' },
-            { icon: '📋', label: 'Todas', value: 'todas' },
+            ///{ icon: '📋', label: 'Todas', value: 'todas' },
             { icon: '❤️', label: 'Voluntariado', value: 'voluntariado' },
             { icon: '💰', label: 'Donaciones', value: 'donaciones' },
             { icon: '🤝', label: 'Asociados', value: 'asociados' },
