@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/admin-dashboard.css'; // Asegúrate de que el estilo esté conectado correctamente7
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'; // Importa SweetAlert2
 
 const UserMenu: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -11,14 +12,23 @@ const UserMenu: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // Elimina el token de sesión
-    localStorage.removeItem('token'); // Si estás utilizando tokens para manejar la sesióN
+    // Aquí se muestra la alerta de confirmación
+    Swal.fire({
+      title: '¿Estás seguro de que quieres cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cerrar sesión',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario confirma, elimina el token de sesión y redirige
+        localStorage.removeItem('token'); // Elimina el token de sesión
 
-  // Redirige a la página de inicio de sesión
-  window.location.href = '/login';
-
-    // Redirige a la página de inicio de sesión
-    window.location.href = '/login';
+        // Redirige a la página de inicio de sesión
+        navigate('/login');
+      }
+    });
   };
 
   const handleProfile = () => {
