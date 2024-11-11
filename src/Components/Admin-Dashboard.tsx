@@ -648,27 +648,42 @@ window.addEventListener('scroll', () => {
 
   return (
     <div className="admin-dashboard">
+      <button 
+        className="sidebar-toggle" 
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label={sidebarOpen ? "Cerrar menú lateral" : "Abrir menú lateral"}
+      >
+        {sidebarOpen ? '✕' : '☰'}
+      </button>
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <nav>
           {[
             { icon: '📊', label: 'Dashboard', value: 'overview' },
-            ///{ icon: '📋', label: 'Todas', value: 'todas' },
             { icon: '❤️', label: 'Voluntariado', value: 'voluntariado' },
             { icon: '💰', label: 'Donaciones', value: 'donaciones' },
             { icon: '🤝', label: 'Asociados', value: 'asociados' },
             { icon: '👵', label: 'Adultos Mayores', value: 'adultos-mayores' },
             { icon: '🖼️', label: 'Galería', value: 'galeria' },
           ].map(({ icon, label, value }) => (
-            <button key={value} className={activeTab === value ? 'active' : ''} onClick={() => setActiveTab(value)}>
+            <button 
+              key={value} 
+              className={activeTab === value ? 'active' : ''} 
+              onClick={() => {
+                setActiveTab(value);
+                if (window.innerWidth <= 768) {
+                  setSidebarOpen(false);
+                }
+              }}
+            >
               {icon} {label}
             </button>
           ))}
         </nav>
       </aside>
-
+  
       <main className="main-content">
         <UserMenu />
-
+  
         {activeTab === 'overview' ? (
           <OverviewGrid solicitudesPorTipo={solicitudesPorTipo} />
         ) : activeTab === 'galeria' ? (
@@ -687,14 +702,14 @@ window.addEventListener('scroll', () => {
                 <option value="cedula">Cédula</option>
               </select>
             </header>
-
+  
             <section className="solicitudes-list">
               <table>
                 <thead>{renderTablaCabeceras(activeTab)}</thead>
                 <tbody>{paginatedSolicitudes.map(renderFila)}</tbody>
               </table>
             </section>
-
+  
             <div className="pagination">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -719,16 +734,14 @@ window.addEventListener('scroll', () => {
             </div>
           </>
         )}
-
+  
         {modalOpen && (
           <Modal
             type={modalType}
             solicitud={selectedSolicitud}
             onAdd={handleAddSolicitud}
             onUpdate={handleUpdateStatus}
-            onSubm
-
-it={handleSubmitModal}
+            onSubmit={handleSubmitModal}
             onClose={() => setModalOpen(false)}
           />
         )}
